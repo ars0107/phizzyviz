@@ -16,12 +16,8 @@ let backgroundColor = "black"
 //     data.push(day)
 // };
 
-d3.json('data/austin_15.json').then(function(data) {
+d3.json('data/davis_06.json').then(function(data) {
     console.log(data)
-    // edge will be for each blanket square in pixels
-    // 375 total squares (365 + 10); 375 = 15 * 25
-
-
     
     let indexArray = []
     
@@ -32,13 +28,14 @@ d3.json('data/austin_15.json').then(function(data) {
         }
     }
     
-    console.log(indexArray.reverse())
-    
-    for (let i = indexArray.length; i >= 0; i--) {
+    for (let i = 0; i < indexArray.length; i++) {
         let item = {'type': 'label', 'month': 11-i}
-        data.splice(indexArray[i], 0, item)
+        data.splice(indexArray[indexArray.length - 1 - i], 0, item)
     }
-    
+
+    // Add January label
+    data.splice(0, 0, {'type': 'label', 'month': 0})
+
     console.log(data)
     
     let columns = 15
