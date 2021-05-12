@@ -16,13 +16,37 @@ let backgroundColor = "black"
 //     data.push(day)
 // };
 
-d3.json('data/austin_21.json').then(function(data) {
+d3.json('data/austin_15.json').then(function(data) {
     console.log(data)
     // edge will be for each blanket square in pixels
     // 375 total squares (365 + 10); 375 = 15 * 25
+
+
+    
+    let indexArray = []
+    
+    // slicing months
+    for (let i = 1; i < data.length; i++) {
+        if (data[i].datetime.slice(0, 7) != data[i-1].datetime.slice(0, 7)) {
+            indexArray.push(i)
+        }
+    }
+    
+    console.log(indexArray.reverse())
+    
+    for (let i = indexArray.length; i >= 0; i--) {
+        let item = {'type': 'label', 'month': i}
+        data.splice(indexArray[i], 0, item)
+    }
+    
+    console.log(data)
+    
+    let columns = 15
     let edge = 32
-    let width = 15 * edge
-    let height = 25 * edge
+    let rows = Math.ceil(data.length/columns)
+    let width = columns * edge
+    let height = rows * edge
+    let offset = 0
     
     function indexToXY(i){
         // example: i = 0
@@ -30,8 +54,8 @@ d3.json('data/austin_21.json').then(function(data) {
         // example (end of line)
         // x = 14, y = 0, so i = 9
     
-        let y = Math.floor((i + 5 )/15)
-        let x = i + 5 - y * 15
+        let y = Math.floor((i + offset )/columns)
+        let x = i + offset - y * columns
         return {x: x*edge, y: y*edge}
     
         // todo: one more example to work through
@@ -106,6 +130,6 @@ d3.json('data/austin_21.json').then(function(data) {
       .attr('fill', 'none')
       .attr('stroke', 'magenta')
       .attr('stroke-width', 5)
-      .attr('display', d => d.datetime == '2007-09-28' ? 'block': 'none')
+      .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
 })
 
