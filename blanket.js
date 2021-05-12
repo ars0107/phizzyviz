@@ -35,7 +35,7 @@ d3.json('data/austin_15.json').then(function(data) {
     console.log(indexArray.reverse())
     
     for (let i = indexArray.length; i >= 0; i--) {
-        let item = {'type': 'label', 'month': i}
+        let item = {'type': 'label', 'month': 11-i}
         data.splice(indexArray[i], 0, item)
     }
     
@@ -191,5 +191,19 @@ d3.json('data/austin_15.json').then(function(data) {
       .attr('stroke', 'magenta')
       .attr('stroke-width', 5)
       .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
+
+    highlightSquares
+        .append('text')
+        .attr('x', edge/2)
+        .attr('y', edge/2)
+        .attr('dy', edge/8)
+        .attr('text-anchor', 'middle')
+        .text(d => {
+            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            return months[d.month]
+            })
+        .style('font-weight', '800')
+        .style('font-size', `${edge*5/16}px`)
+        .style('font-family', 'sans-serif')
 })
 
