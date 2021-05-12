@@ -16,7 +16,7 @@ let backgroundColor = "black"
 //     data.push(day)
 // };
 
-d3.json('austin_07.json').then(function(data) {
+d3.json('data/austin_21.json').then(function(data) {
     console.log(data)
     // edge will be for each blanket square in pixels
     // 375 total squares (365 + 10); 375 = 15 * 25
@@ -44,8 +44,12 @@ d3.json('austin_07.json').then(function(data) {
         .attr("width", width)
         .attr("height", height)
     
+    let layer1 = svg.append('g')
+    let layer2 = svg.append('g')
+    
+    
         // making a virtual selection of the class "square" & binding data
-    let squares = svg.selectAll(".square").data(data)
+    let squares = layer1.selectAll(".square").data(data)
         .enter().append("g")
         .attr("class", "square")
         .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
@@ -72,18 +76,36 @@ d3.json('austin_07.json').then(function(data) {
       .attr('width', edge)
       .attr('height', edge)
       .attr('fill', '#888')
+//       .attr('stroke', d => d.datetime == '2007-09-28' ? 'magenta': '#888')
 
     squares
-      .selectAll('circle').data(d => ['temp','tempmax','tempmin'].map(x => {return {measurement:x, value:d[x]}; })).enter()
+      .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:d[x]}; })).enter()
         .append('circle')
         .attr('cx', 0.5*edge)
         .attr('cy', 0.5*edge)
         .attr('r', d => {
-            if (d.measurement == 'temp') return 0.5*edge
-            else if (d.measurement == 'tempmax') return 0.5*2/3*edge
-            else if (d.measurement == 'tempmin') return 0.5*1/3*edge
+            if (d.measurement == 'tempmax') return 0.5*3/4*edge
+            else if (d.measurement == 'temp') return 0.5*2/4*edge
+            else if (d.measurement == 'tempmin') return 0.5*1/4*edge
         })
         .attr('fill', d => color(d.value))
         .attr('stroke', d => d3.color(color(d.value)).darker())
+    
+    let highlightSquares = layer2.selectAll(".highlight-square").data(data)
+        .enter().append("g")
+        .attr("class", "highlight-square")
+        .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)  
+    
+    
+    highlightSquares    
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', edge)
+      .attr('height', edge)
+      .attr('fill', 'none')
+      .attr('stroke', 'magenta')
+      .attr('stroke-width', 5)
+      .attr('display', d => d.datetime == '2007-09-28' ? 'block': 'none')
 })
 
