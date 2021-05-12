@@ -4,9 +4,9 @@ This is (or will be) planning tool for creating a temperature blanket using croc
 
 ## To Do
 
-- [ ] Figure out a specific i value, such as for a birthday
+- [x] Figure out a specific i value, such as for a birthday
 - [x] Add border to circles
-- [ ] Reduce radiuses (why are we doing that again?)
+- [x] Reduce radiuses so the borders don't overlap
 
 Add inputs/interactions for:
 
