@@ -1,4 +1,4 @@
-let data = []
+let globals = {}
 let backgroundColor = "black"
 
 // for (let i = 0; i < 365; i++) {
@@ -16,29 +16,50 @@ let backgroundColor = "black"
 //     data.push(day)
 // };
 
-d3.json('data/davis_06.json').then(function(data) {
-    console.log(data)
-    
-    let indexArray = []
-    
-    // slicing months
-    for (let i = 1; i < data.length; i++) {
-        if (data[i].datetime.slice(0, 7) != data[i-1].datetime.slice(0, 7)) {
-            indexArray.push(i)
+let slider = d3
+    .sliderHorizontal()
+    .min(10)
+    .max(20)
+    .step(1)
+    .width(300)
+    .displayValue(false)
+    .on('onchange', (val) => {
+      drawBlanket(val, globals.data)
+    });
+
+d3.select('#column-slider')
+    .append('svg')
+    .attr('width', 500)
+    .attr('height', 100)
+    .append('g')
+    .attr('transform', 'translate(30,30)')
+    .call(slider);
+
+globals.temperatureData = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+let tempScale = d3.scaleLinear().domain(d3.extent(globals.temperatureData)).range([500, 0])
+
+d3.select('#temperature-picker').append('svg')
+    .attr('width', 25)
+    .attr('height', 500)
+    .selectAll('rect').data(globals.temperatureData)
+    .enter().append('rect')
+    .attr('x', 0)
+    .attr('y', d => tempScale(d))
+    .attr('width', 25)
+    .attr('height', (d, i) => {// d = data point, i = index of that data, a = entire data array
+    console.log(d, i)    
+    if (i < globals.temperatureData.length) {
+           return tempScale(d) - tempScale(globals.temperatureData[i + 1])
         }
-    }
-    
-    for (let i = 0; i < indexArray.length; i++) {
-        let item = {'type': 'label', 'month': 11-i}
-        data.splice(indexArray[indexArray.length - 1 - i], 0, item)
-    }
+        else {
+           return 0
+        }
+    }) 
+    .attr('fill', 'red')
 
-    // Add January label
-    data.splice(0, 0, {'type': 'label', 'month': 0})
-
-    console.log(data)
-    
-    let columns = 15
+function drawBlanket(nColumns, data){
+    let columns = nColumns
     let edge = 32
     let rows = Math.ceil(data.length/columns)
     let width = columns * edge
@@ -64,6 +85,8 @@ d3.json('data/davis_06.json').then(function(data) {
     let svg = d3.select("#blanket")
         .attr("width", width)
         .attr("height", height)
+    
+    svg.html("")
     
     let yarnColors = [
         {'name':'aubergine','url':'/images/aubergine-132.jpg'},
@@ -121,7 +144,7 @@ d3.json('data/davis_06.json').then(function(data) {
     let layer2 = svg.append('g')
     
     
-        // making a virtual selection of the class "square" & binding data
+    // making a virtual selection of the class "square" & binding data
     let squares = layer1.selectAll(".square").data(data)
         .enter().append("g")
         .attr("class", "square")
@@ -202,5 +225,30 @@ d3.json('data/davis_06.json').then(function(data) {
         .style('font-weight', '800')
         .style('font-size', `${edge*5/16}px`)
         .style('font-family', 'sans-serif')
+}
+
+d3.json('data/davis_06.json').then(function(data) {
+    console.log(data)
+    globals.data = data
+    let indexArray = []
+    
+    // slicing months
+    for (let i = 1; i < data.length; i++) {
+        if (data[i].datetime.slice(0, 7) != data[i-1].datetime.slice(0, 7)) {
+            indexArray.push(i)
+        }
+    }
+    
+    for (let i = 0; i < indexArray.length; i++) {
+        let item = {'type': 'label', 'month': 11-i}
+        data.splice(indexArray[indexArray.length - 1 - i], 0, item)
+    }
+
+    // Add January label
+    data.splice(0, 0, {'type': 'label', 'month': 0})
+
+    console.log(data)
+    
+    drawBlanket(15, data)
 })
 
