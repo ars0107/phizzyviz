@@ -35,6 +35,29 @@ d3.select('#column-slider')
     .attr('transform', 'translate(30,30)')
     .call(slider);
 
+globals.temperatureData = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+let tempScale = d3.scaleLinear().domain(d3.extent(globals.temperatureData)).range([500, 0])
+
+d3.select('#temperature-picker').append('svg')
+    .attr('width', 25)
+    .attr('height', 500)
+    .selectAll('rect').data(globals.temperatureData)
+    .enter().append('rect')
+    .attr('x', 0)
+    .attr('y', d => tempScale(d))
+    .attr('width', 25)
+    .attr('height', (d, i) => {// d = data point, i = index of that data, a = entire data array
+    console.log(d, i)    
+    if (i < globals.temperatureData.length) {
+           return tempScale(d) - tempScale(globals.temperatureData[i + 1])
+        }
+        else {
+           return 0
+        }
+    }) 
+    .attr('fill', 'red')
+
 function drawBlanket(nColumns, data){
     let columns = nColumns
     let edge = 32
