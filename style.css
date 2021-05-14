@@ -1,0 +1,10 @@
+#temperature-picker {
+    display: inline-block;
+    margin-left: 100px;
+    position: absolute;
+    top: 80px;
+}
+
+.cutoff {
+    cursor: ns-resize;
+}
