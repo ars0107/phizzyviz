@@ -39,22 +39,22 @@ d3.select('#column-slider')
     .call(slider);
 
 let yarnColors = {
-    aubergine:{url:'/images/aubergine-132.jpg', color: '#512e4f'},
-    coral: {url:'/images/coral-135.jpg', color: '#f06188'},
-    corn: {url:'/images/corn-120.jpg', color: '#ea9d20'},
-    dustyBlue: {url:'/images/dusty-blue-149.jpg', color: '#5485ba'},
-    dutchBlue: {url:'/images/dutch-blue-125.jpg', color: '#144e70'},
-    green: {url:'/images/green-146.jpg', color: '#317c49'},
-    magenta: {url:'/images/magenta-133.jpg', color: '#ad3e9b'},
-    pineapple: {url:'/images/pineapple-152.jpg', color: '#f7cc77'},
-    red: {url:'/images/red-112.jpg', color: '#b10821'},
-    tangerine: {url:'/images/tangerine-151.jpg', color:'#f47946'},
-    royalBlue: {url:'/images/royal-blue-148.jpg', color: '#075ead'},
-    teal: {url:'/images/teal-107.jpg', color:'#07575e'},
-    violet: {url:'/images/violet-131.jpg', color:'#5a3f87'},
-    wine: {url:'/images/wine-117.jpg', color: '#611a24'},
-    lightGrey: {url:'/images/light-grey-103.jpg', color: '#c8bcaf'},
-    darkGrey: {url:'/images/dark-grey-104.jpg', color:'#615b59'},
+    aubergine:{url:'./images/aubergine-132.jpg', color: '#512e4f'},
+    coral: {url:'./images/coral-135.jpg', color: '#f06188'},
+    corn: {url:'./images/corn-120.jpg', color: '#ea9d20'},
+    dustyBlue: {url:'./images/dusty-blue-149.jpg', color: '#5485ba'},
+    dutchBlue: {url:'./images/dutch-blue-125.jpg', color: '#144e70'},
+    green: {url:'./images/green-146.jpg', color: '#317c49'},
+    magenta: {url:'./images/magenta-133.jpg', color: '#ad3e9b'},
+    pineapple: {url:'./images/pineapple-152.jpg', color: '#f7cc77'},
+    red: {url:'./images/red-112.jpg', color: '#b10821'},
+    tangerine: {url:'./images/tangerine-151.jpg', color:'#f47946'},
+    royalBlue: {url:'./images/royal-blue-148.jpg', color: '#075ead'},
+    teal: {url:'./images/teal-107.jpg', color:'#07575e'},
+    violet: {url:'./images/violet-131.jpg', color:'#5a3f87'},
+    wine: {url:'./images/wine-117.jpg', color: '#611a24'},
+    lightGrey: {url:'./images/light-grey-103.jpg', color: '#c8bcaf'},
+    darkGrey: {url:'./images/dark-grey-104.jpg', color:'#615b59'},
 }
 
 function color(val, texture){
