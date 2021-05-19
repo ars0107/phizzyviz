@@ -18,6 +18,7 @@ https://ars0107.github.io/blanket-stuff/
 - [ ] Gather more data
 - [ ] Add a square for the sample (and make it optional)
 - [ ] Try to automatically fill in the square for the sample
+- [ ] Fill the month markers with the average color of each month's temp
 
 Add inputs/interactions for:
 
@@ -44,3 +45,4 @@ Stretch goals:
 - [ ] Format for daily [current] temps per location
   - [ ] Add a fun fact about fiber for every day
   - [ ] Daily deals
+- [ ] Add method to save (and reimplement) a custom temp palette
