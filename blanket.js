@@ -96,7 +96,13 @@ function drawTempRanges() {
     let width = svgWidth - margin.left - margin.right
     let height = svgHeight - margin.top - margin.bottom
 
-    d3.select('#temperature-picker').html('')
+    d3.select('#temperature-picker').html('<i class="fas fa-sync" id="reset"></i>')
+
+    d3.select('#reset').on('click', function(){
+        globals.tempRanges.cutoffs = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        drawTempRanges()
+        drawBlanket()
+    })
 
     let svg =  d3.select('#temperature-picker').append('svg')
         .attr('width', svgWidth)
@@ -108,7 +114,6 @@ function drawTempRanges() {
 
     let g = svg.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`)
-        
         
     let ranges = g.selectAll('.range').data(globals.tempRanges.ranges)
         .enter().append('rect').attr('class', 'range')
@@ -190,29 +195,23 @@ function drawTempRanges() {
 drawTempRanges();
 
 function drawBlanket(){
-    let data = globals.data;
-
+    let data = globals.data
+    let tempData = data.data
     let columns = globals.nColumns
     let edge = 32
-    let rows = Math.ceil(data.length/columns)
+    let rows = Math.ceil(tempData.length/columns)
     let width = columns * edge
     let height = rows * edge
     let offset = 0
     
-    function indexToXY(i){
-        // example: i = 0
-        // x = 5, y = 0
-        // example (end of line)
-        // x = 14, y = 0, so i = 9
-    
+    function indexToXY(i){ 
         let y = Math.floor((i + offset )/columns)
         let x = i + offset - y * columns
         return {x: x*edge, y: y*edge}
     
-        // todo: one more example to work through
-        // i = Cam's birthday 
-        // todo: figure out the i value of Cam's b-day
     }
+
+    d3.select('header').html(`<h1>${data.displayName} ${data.year}</h1>`)
     
     // select element, adjust attributes
     let svg = d3.select("#blanket")
@@ -256,7 +255,7 @@ function drawBlanket(){
     
     
     // making a virtual selection of the class "square" & binding data
-    let squares = layer1.selectAll(".square").data(data)
+    let squares = layer1.selectAll(".square").data(tempData)
         .enter().append("g")
         .attr("class", "square")
         .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
@@ -283,14 +282,15 @@ function drawBlanket(){
         })
         .attr('fill', d => {
             if(d.value) {
-                return color(d.value, true)
+                // if (d.measurement == 'tempmin') return 
+                return color(d.value, d.measurement != 'tempmin')
             } else {
                 return 'url(#lightGrey-fg)'
             }
         })
         //.attr('stroke', d => d3.color(color(d.value)).darker())
     
-    let highlightSquares = layer2.selectAll(".highlight-square").data(data)
+    let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
         .enter().append("g")
         .attr("class", "highlight-square")
         .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)  
@@ -322,28 +322,38 @@ function drawBlanket(){
         .style('font-family', 'sans-serif')
 }
 
-d3.json('data/davis_06.json').then(function(data) {
-    console.log(data)
-    globals.data = data
-    let indexArray = []
-    
-    // slicing months
-    for (let i = 1; i < data.length; i++) {
-        if (data[i].datetime.slice(0, 7) != data[i-1].datetime.slice(0, 7)) {
-            indexArray.push(i)
+function update(fileName){
+    d3.json(`data/${fileName}.json`).then(function(data) {
+        console.log(data)
+        globals.data = data
+        tempData = data.data
+        
+        let indexArray = []
+        
+        // slicing months
+        for (let i = 1; i < tempData.length; i++) {
+            if (tempData[i].datetime.slice(0, 7) != tempData[i-1].datetime.slice(0, 7)) {
+                indexArray.push(i)
+            }
         }
-    }
+        
+        for (let i = 0; i < indexArray.length; i++) {
+            let item = {'type': 'label', 'month': 11-i}
+            tempData.splice(indexArray[indexArray.length - 1 - i], 0, item)
+        }
     
-    for (let i = 0; i < indexArray.length; i++) {
-        let item = {'type': 'label', 'month': 11-i}
-        data.splice(indexArray[indexArray.length - 1 - i], 0, item)
-    }
-
-    // Add January label
-    data.splice(0, 0, {'type': 'label', 'month': 0})
-
-    console.log(data)
+        // Add January label
+        tempData.splice(0, 0, {'type': 'label', 'month': 0})
     
-    drawBlanket()
+        drawBlanket()
+    })
+}
+
+d3.select('#location-select').on('change', function(){
+    console.log(d3.select(this))
+    let fileName = d3.select(this).property('value')
+    console.log(fileName)
+    update(fileName)
 })
 
+update('Fort_Lee_2018')

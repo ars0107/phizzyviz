@@ -7,6 +7,7 @@
     <title>Blanket Stuff</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://kit.fontawesome.com/8ef36571ca.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -15,9 +16,24 @@
 </head>
 
 <body>
+    <header></header>
     <div id="column-slider"></div>
     <svg id="blanket"></svg>
     <div id="temperature-picker"></div>
+    <div id="location-picker">
+        <select name="locations" id="location-select">
+            <option value="austin_07">Austin, TX - 2007</option>
+            <option value="austin_15">Austin, TX - 2015</option>
+            <option value="austin_21">Austin, TX - 2021</option>
+            <option value="Belize_2020">Belize - 2020</option>
+            <option value="chicago_11">Chicago, IL - 2011</option>
+            <option value="Costa_Rica_2020">Costa Rica - 2020</option>
+            <option value="davis_06">Davis, CA - 2006</option>
+            <option value="davis_07">Davis, CA - 2007</option>
+            <option value="Fort_Lee_2018" selected>Fort Lee, NJ - 2018</option>
+            <option value="sacramento_07">Sacramento, CA - 2007</option>    
+        </select>
+    </div>
     <script src="blanket.js"></script>
 </body>
 </html>
