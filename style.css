@@ -1,8 +1,24 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;  
+}
+
 #temperature-picker {
     display: inline-block;
     margin-left: 100px;
     position: absolute;
     top: 80px;
+}
+
+#location-picker {
+    display: inline-block;
+    position: absolute;
+    top: 80px;
+    margin-left: 200px;
+}
+
+#reset {
+    cursor: pointer;
 }
 
 .cutoff {
