@@ -18,6 +18,14 @@ globals.tempRanges = {
 
 globals.selectedDate = ""
 
+d3.select('#date')
+    .on("change", function(d){
+        console.log(d)
+        let dt = d.target.value
+        globals.selectedDate = dt
+        drilldown(dt)
+    })
+
 let slider = d3
     .sliderHorizontal()
     .min(10)
@@ -30,7 +38,6 @@ let slider = d3
         globals.nColumns = val;
         drawBlanket()
     })
-
 
 d3.select('#column-slider')
     .append('svg')
@@ -196,17 +203,18 @@ function drawTempRanges() {
 
 drawTempRanges();
 
-function drawSquare(dt) {
+function drilldown(dt) {
     let svg = d3.select("#drilldown>svg") // selects drilldown svg
     let edge = 300
     let width = edge
     let height = edge
-    svg.attr('height', height).attr('width', width)
+    svg.attr('height', height).attr('width', width).html("")
 
     let datum = globals.data.data.filter(x => x.datetime == dt)[0]
     console.log(datum)
     svg
-      .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
+
+    .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
         .append('circle')
         .attr('cx', 0.5*edge)
         .attr('cy', 0.5*edge)
@@ -220,9 +228,23 @@ function drawSquare(dt) {
                 // if (d.measurement == 'tempmin') return
                 return color(d.value, false)
             } else {
-                return 'url(#lightGrey-fg)'
+                return 'lightgrey'
             }
         })
+
+    let description = d3.select("#drilldown>div")
+    description.html("")
+    description.append("p")
+        .text(dt)
+    description.append("p")
+        .text(`Max temp: ${datum.tempmax}`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tempmax))
+    description.append("p")
+        .text(`Average temp: ${datum.temp}`)
+        .append("div").attr("class", "color-block").style("background", color(datum.temp))
+    description.append("p")
+        .text(`Min temp: ${datum.tempmin}`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tempmin))
 }
 
 function drawBlanket(){
@@ -239,7 +261,6 @@ function drawBlanket(){
         let y = Math.floor((i + offset )/columns)
         let x = i + offset - y * columns
         return {x: x*edge, y: y*edge}
-
     }
 
     d3.select('header').html(`<h1>${data.displayName} ${data.year}</h1>`)
@@ -292,17 +313,23 @@ function drawBlanket(){
         .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
 
     squares
-      .append('rect')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', edge)
-      .attr('height', edge)
-      //.attr('fill', '#615b58')
-      .attr('fill', 'url(#darkGrey-bg)')
+        .append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', edge)
+        .attr('height', edge)
+        //.attr('fill', '#615b58')
+        .attr('fill', 'url(#darkGrey-bg)')
 //       .attr('stroke', d => d.datetime == '2007-09-28' ? 'magenta': '#888')
+        .on("click", function(d){
+            console.log(d)
+            let dt = d.target.__data__.datetime
+            d3.select("#date").property("value", dt)
+            drilldown(dt)
+        })
 
     squares
-      .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:d[x]}; })).enter()
+        .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:d[x]}; })).enter()
         .append('circle')
         .attr('cx', 0.5*edge)
         .attr('cy', 0.5*edge)
@@ -319,6 +346,7 @@ function drawBlanket(){
                 return 'url(#lightGrey-fg)'
             }
         })
+        .style('pointer-events', "none")
         //.attr('stroke', d => d3.color(color(d.value)).darker())
 
     let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
@@ -328,15 +356,15 @@ function drawBlanket(){
 
 
     highlightSquares
-      .append('rect')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', edge)
-      .attr('height', edge)
-      .attr('fill', 'none')
-      .attr('stroke', 'magenta')
-      .attr('stroke-width', 5)
-      .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
+        .append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', edge)
+        .attr('height', edge)
+        .attr('fill', 'none')
+        .attr('stroke', 'magenta')
+        .attr('stroke-width', 5)
+        .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
 
     highlightSquares
         .append('text')
@@ -352,7 +380,7 @@ function drawBlanket(){
         .style('font-size', `${edge*5/16}px`)
         .style('font-family', 'sans-serif')
 
-    drawSquare("2018-07-03")
+    // drilldown("2018-07-03")
 }
 
 function update(fileName){

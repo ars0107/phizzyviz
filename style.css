@@ -17,8 +17,14 @@ header {
 #drilldown {
     position: absolute;
     left: 103%;
-    border: aquamarine solid;
     top: 0;
+}
+
+.color-block {
+width: 15px;
+height: 15px;
+display: inline-block;
+margin-left: 10px;
 }
 
 #temperature-picker {
