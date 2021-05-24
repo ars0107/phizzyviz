@@ -7,11 +7,18 @@ header {
     padding-left: 10%;
 }
 
-#blanket {
+#viz {
     display: inline-block;
     position: absolute;
     left: 15%;
     top: 219px;
+}
+
+#drilldown {
+    position: absolute;
+    left: 103%;
+    border: aquamarine solid;
+    top: 0;
 }
 
 #temperature-picker {
