@@ -169,6 +169,7 @@ function drawTempRanges() {
         globals.tempRanges.cutoffs[i] = tempScale.invert(value)
         drawTempRanges();
         drawBlanket();
+        drilldown()
     }
 
     let cutoffs = g.selectAll('.cutoff').data(globals.tempRanges.cutoffs)
@@ -204,6 +205,7 @@ function drawTempRanges() {
 drawTempRanges();
 
 function drilldown(dt) {
+    if (!dt) dt = globals.selectedDate;
     let svg = d3.select("#drilldown>svg") // selects drilldown svg
     let edge = 300
     let width = edge
@@ -324,8 +326,9 @@ function drawBlanket(){
         .on("click", function(d){
             console.log(d)
             let dt = d.target.__data__.datetime
+            globals.selectedDate = dt
             d3.select("#date").property("value", dt)
-            drilldown(dt)
+            drilldown(dt);
         })
 
     squares
