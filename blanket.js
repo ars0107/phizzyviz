@@ -16,6 +16,8 @@ globals.tempRanges = {
     }
 }
 
+globals.selectedDate = ""
+
 let slider = d3
     .sliderHorizontal()
     .min(10)
@@ -28,7 +30,7 @@ let slider = d3
         globals.nColumns = val;
         drawBlanket()
     })
-    
+
 
 d3.select('#column-slider')
     .append('svg')
@@ -70,7 +72,7 @@ function color(val, texture){
         else if (val >= globals.tempRanges.cutoffs[2]) return 'url(#violet-fg)';
         else if (val >= globals.tempRanges.cutoffs[1]) return 'url(#aubergine-fg)';
         else if (val >= globals.tempRanges.cutoffs[0]) return 'url(#coral-fg)';
-        else return 'url(#magenta-fg)';   
+        else return 'url(#magenta-fg)';
     } else {
         if (val >= globals.tempRanges.cutoffs[10]) return yarnColors.wine.color;
         else if (val >= globals.tempRanges.cutoffs[9]) return yarnColors.red.color;
@@ -83,7 +85,7 @@ function color(val, texture){
         else if (val >= globals.tempRanges.cutoffs[2]) return yarnColors.violet.color;
         else if (val >= globals.tempRanges.cutoffs[1]) return yarnColors.aubergine.color;
         else if (val >= globals.tempRanges.cutoffs[0]) return yarnColors.coral.color;
-        else return yarnColors.magenta.color;   
+        else return yarnColors.magenta.color;
     }
 }
 
@@ -114,18 +116,18 @@ function drawTempRanges() {
 
     let g = svg.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`)
-        
+
     let ranges = g.selectAll('.range').data(globals.tempRanges.ranges)
         .enter().append('rect').attr('class', 'range')
         .attr('x', 0)
         .attr('y', d => tempScale(d.max))
         .attr('width', 25)
-        .attr('height', d => tempScale(d.min) - tempScale(d.max)) 
-        .attr('fill', d => color(0.5*(d.min + d.max), false))    
+        .attr('height', d => tempScale(d.min) - tempScale(d.max))
+        .attr('fill', d => color(0.5*(d.min + d.max), false))
 
     let drag = d3.drag()
         .on('start', function(event, d) { d3.select(this).attr('y', d => tempScale(d) - 3).attr('height', 6) })
-        .on('drag', function(event, d) { 
+        .on('drag', function(event, d) {
             let min = tempScale(globals.tempRanges.min + 1);
             let max = tempScale(globals.tempRanges.cutoffs[1] - 1);
             for (let i = 0; i < globals.tempRanges.cutoffs.length; i++) {
@@ -165,14 +167,14 @@ function drawTempRanges() {
     let cutoffs = g.selectAll('.cutoff').data(globals.tempRanges.cutoffs)
         .enter().append('g').attr('class', 'cutoff')
             .attr('transform', d => `translate(0, ${tempScale(d)})`)
-        
-        
+
+
     cutoffs
         .append('rect')
         .attr('x', 0)
         .attr('y', d => -6)
         .attr('width', 25)
-        .attr('height', 12) 
+        .attr('height', 12)
         .attr('opacity', 0)
 
     cutoffs
@@ -180,9 +182,9 @@ function drawTempRanges() {
         .attr('x', 0)
         .attr('y', d => -1)
         .attr('width', 25)
-        .attr('height', 2) 
+        .attr('height', 2)
         .attr('fill', 'black')
-        
+
     cutoffs.call(drag)
 
     let axis = d3.axisLeft(tempScale).tickValues(globals.tempRanges.values)
@@ -194,6 +196,35 @@ function drawTempRanges() {
 
 drawTempRanges();
 
+function drawSquare(dt) {
+    let svg = d3.select("#drilldown>svg") // selects drilldown svg
+    let edge = 300
+    let width = edge
+    let height = edge
+    svg.attr('height', height).attr('width', width)
+
+    let datum = globals.data.data.filter(x => x.datetime == dt)[0]
+    console.log(datum)
+    svg
+      .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
+        .append('circle')
+        .attr('cx', 0.5*edge)
+        .attr('cy', 0.5*edge)
+        .attr('r', d => {
+            if (d.measurement == 'tempmax') return 0.5*3/4*edge
+            else if (d.measurement == 'temp') return 0.5*2/4*edge
+            else if (d.measurement == 'tempmin') return 0.5*1/4*edge
+        })
+        .attr('fill', d => {
+            if(d.value) {
+                // if (d.measurement == 'tempmin') return
+                return color(d.value, false)
+            } else {
+                return 'url(#lightGrey-fg)'
+            }
+        })
+}
+
 function drawBlanket(){
     let data = globals.data
     let tempData = data.data
@@ -203,23 +234,23 @@ function drawBlanket(){
     let width = columns * edge
     let height = rows * edge
     let offset = 0
-    
-    function indexToXY(i){ 
+
+    function indexToXY(i){
         let y = Math.floor((i + offset )/columns)
         let x = i + offset - y * columns
         return {x: x*edge, y: y*edge}
-    
+
     }
 
     d3.select('header').html(`<h1>${data.displayName} ${data.year}</h1>`)
-    
+
     // select element, adjust attributes
     let svg = d3.select("#blanket")
         .attr("width", width)
         .attr("height", height)
-    
+
     svg.html("")
-    
+
     let defs = svg.append('defs')
 
     defs.selectAll('.fg-color').data(Object.entries(yarnColors)).enter()
@@ -252,15 +283,15 @@ function drawBlanket(){
 
     let layer1 = svg.append('g')
     let layer2 = svg.append('g')
-    
-    
+
+
     // making a virtual selection of the class "square" & binding data
     let squares = layer1.selectAll(".square").data(tempData)
         .enter().append("g")
         .attr("class", "square")
         .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
-       
-    squares    
+
+    squares
       .append('rect')
       .attr('x', 0)
       .attr('y', 0)
@@ -282,21 +313,21 @@ function drawBlanket(){
         })
         .attr('fill', d => {
             if(d.value) {
-                // if (d.measurement == 'tempmin') return 
+                // if (d.measurement == 'tempmin') return
                 return color(d.value, d.measurement != 'tempmin')
             } else {
                 return 'url(#lightGrey-fg)'
             }
         })
         //.attr('stroke', d => d3.color(color(d.value)).darker())
-    
+
     let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
         .enter().append("g")
         .attr("class", "highlight-square")
-        .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)  
-    
-    
-    highlightSquares    
+        .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
+
+
+    highlightSquares
       .append('rect')
       .attr('x', 0)
       .attr('y', 0)
@@ -320,6 +351,8 @@ function drawBlanket(){
         .style('font-weight', '800')
         .style('font-size', `${edge*5/16}px`)
         .style('font-family', 'sans-serif')
+
+    drawSquare("2018-07-03")
 }
 
 function update(fileName){
@@ -327,24 +360,24 @@ function update(fileName){
         console.log(data)
         globals.data = data
         tempData = data.data
-        
+
         let indexArray = []
-        
+
         // slicing months
         for (let i = 1; i < tempData.length; i++) {
             if (tempData[i].datetime.slice(0, 7) != tempData[i-1].datetime.slice(0, 7)) {
                 indexArray.push(i)
             }
         }
-        
+
         for (let i = 0; i < indexArray.length; i++) {
             let item = {'type': 'label', 'month': 11-i}
             tempData.splice(indexArray[indexArray.length - 1 - i], 0, item)
         }
-    
+
         // Add January label
         tempData.splice(0, 0, {'type': 'label', 'month': 0})
-    
+
         drawBlanket()
     })
 }
