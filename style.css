@@ -1,24 +1,50 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
-    padding: 10px;  
+    padding: 10px;
+}
+
+header {
+    padding-left: 10%;
+}
+
+#blanket {
+    display: inline-block;
+    position: absolute;
+    left: 15%;
+    top: 219px;
 }
 
 #temperature-picker {
     display: inline-block;
-    margin-left: 100px;
     position: absolute;
-    top: 80px;
+    top: 200px;
 }
 
 #location-picker {
     display: inline-block;
     position: absolute;
-    top: 80px;
-    margin-left: 200px;
+    top: 120px;
+    /* margin-left: 30%; */
+}
+
+#date {
+    position: absolute;
+    top: 141px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#column-slider {
+    position: absolute;
+    left: 200px;
 }
 
 #reset {
     cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    bottom: -30px;
+    font-size: x-large;
+    left: 65%;
 }
 
 .cutoff {

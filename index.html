@@ -16,10 +16,11 @@
 </head>
 
 <body>
-    <header></header>
-    <div id="column-slider"></div>
-    <svg id="blanket"></svg>
+    <header>
+        <h1>&lt;Location, Year&gt;</h1>
+    </header>
     <div id="temperature-picker"></div>
+    <div id="column-slider"></div>
     <div id="location-picker">
         <select name="locations" id="location-select">
             <option value="austin_07">Austin, TX - 2007</option>
@@ -32,9 +33,11 @@
             <option value="davis_06">Davis, CA - 2006</option>
             <option value="davis_07">Davis, CA - 2007</option>
             <option value="Fort_Lee_2018" selected>Fort Lee, NJ - 2018</option>
-            <option value="sacramento_07">Sacramento, CA - 2007</option>    
+            <option value="sacramento_07">Sacramento, CA - 2007</option>
         </select>
     </div>
+    <div><input type="date" id="date" value="2018-01-01"></div>
+    <svg id="blanket"></svg>
     <script src="blanket.js"></script>
 </body>
 </html>
