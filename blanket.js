@@ -111,6 +111,7 @@ function drawTempRanges() {
         globals.tempRanges.cutoffs = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         drawTempRanges()
         drawBlanket()
+        drilldown()
     })
 
     let svg =  d3.select('#temperature-picker').append('svg')
