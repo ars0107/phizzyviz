@@ -393,6 +393,8 @@ function update(fileName){
         globals.data = data
         tempData = data.data
 
+        d3.select("#date").property("value", `${data.year}-01-01`)
+
         let indexArray = []
 
         // slicing months
