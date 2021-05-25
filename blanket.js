@@ -409,9 +409,14 @@ function update(fileName){
 
         // Add January label
         tempData.splice(0, 0, {'type': 'label', 'month': 0})
-
+        clearDrilldown()
         drawBlanket()
     })
+}
+
+function clearDrilldown(){
+    d3.select("#drilldown>svg").html("")
+    d3.select("#drilldown>div").html("")
 }
 
 d3.select('#location-select').on('change', function(){
