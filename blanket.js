@@ -20,7 +20,6 @@ globals.selectedDate = ""
 
 d3.select('#date')
     .on("change", function(d){
-        console.log(d)
         let dt = d.target.value
         globals.selectedDate = dt
         drilldown(dt)
@@ -214,7 +213,6 @@ function drilldown(dt) {
     svg.attr('height', height).attr('width', width).html("")
 
     let datum = globals.data.data.filter(x => x.datetime == dt)[0]
-    console.log(datum)
     svg
 
     .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
@@ -228,7 +226,6 @@ function drilldown(dt) {
         })
         .attr('fill', d => {
             if(d.value) {
-                // if (d.measurement == 'tempmin') return
                 return color(d.value, false)
             } else {
                 return 'lightgrey'
@@ -284,7 +281,7 @@ function drawBlanket(){
         .attr('patternUnits', 'userSpaceOnUse')
         .attr('width', edge)
         .attr('height', edge)
-      .append('image')
+        .append('image')
         .attr('href', d => d[1].url)
         .attr('x', 0)
         .attr('y', 0)
@@ -297,7 +294,7 @@ function drawBlanket(){
         .attr('patternUnits', 'userSpaceOnUse')
         .attr('width', edge * 2)
         .attr('height', edge * 2)
-      .append('image')
+        .append('image')
         .attr('href', d => d[1].url)
         .attr('x', -edge/2)
         .attr('y', -edge/2)
@@ -321,11 +318,8 @@ function drawBlanket(){
         .attr('y', 0)
         .attr('width', edge)
         .attr('height', edge)
-        //.attr('fill', '#615b58')
         .attr('fill', 'url(#darkGrey-bg)')
-//       .attr('stroke', d => d.datetime == '2007-09-28' ? 'magenta': '#888')
         .on("click", function(d){
-            console.log(d)
             let dt = d.target.__data__.datetime
             globals.selectedDate = dt
             d3.select("#date").property("value", dt)
@@ -344,52 +338,48 @@ function drawBlanket(){
         })
         .attr('fill', d => {
             if(d.value) {
-                // if (d.measurement == 'tempmin') return
                 return color(d.value, d.measurement != 'tempmin')
             } else {
                 return 'url(#lightGrey-fg)'
             }
         })
         .style('pointer-events', "none")
-        //.attr('stroke', d => d3.color(color(d.value)).darker())
 
-    let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
-        .enter().append("g")
-        .attr("class", "highlight-square")
-        .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
+    // let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
+    //     .enter().append("g")
+    //     .attr("class", "highlight-square")
+    //     .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
 
 
-    highlightSquares
-        .append('rect')
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('width', edge)
-        .attr('height', edge)
-        .attr('fill', 'none')
-        .attr('stroke', 'magenta')
-        .attr('stroke-width', 5)
-        .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
+    // highlightSquares
+    //     .append('rect')
+    //     .attr('x', 0)
+    //     .attr('y', 0)
+    //     .attr('width', edge)
+    //     .attr('height', edge)
+    //     .attr('fill', 'none')
+    //     .attr('stroke', 'magenta')
+    //     .attr('stroke-width', 5)
+    //     .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
 
-    highlightSquares
-        .append('text')
-        .attr('x', edge/2)
-        .attr('y', edge/2)
-        .attr('dy', edge/8)
-        .attr('text-anchor', 'middle')
-        .text(d => {
-            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            return months[d.month]
-            })
-        .style('font-weight', '800')
-        .style('font-size', `${edge*5/16}px`)
-        .style('font-family', 'sans-serif')
-
-    // drilldown("2018-07-03")
+    // highlightSquares
+    //     .append('text')
+    //     .attr('x', edge/2)
+    //     .attr('y', edge/2)
+    //     .attr('dy', edge/8)
+    //     .attr('text-anchor', 'middle')
+    //     .text(d => {
+    //         let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    //         return months[d.month]
+    //         })
+    //     .style('font-weight', '800')
+    //     .style('font-size', `${edge*5/16}px`)
+    //     .style('font-family', 'sans-serif')
 }
 
 function update(fileName){
     d3.json(`data/${fileName}.json`).then(function(data) {
-        console.log(data)
+        // console.log(data)
 
         tempData = []
 
@@ -428,9 +418,7 @@ function clearDrilldown(){
 }
 
 d3.select('#location-select').on('change', function(){
-    console.log(d3.select(this))
     let fileName = d3.select(this).property('value')
-    console.log(fileName)
     update(fileName)
 })
 
