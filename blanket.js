@@ -390,27 +390,33 @@ function drawBlanket(){
 function update(fileName){
     d3.json(`data/${fileName}.json`).then(function(data) {
         console.log(data)
-        globals.data = data
-        tempData = data.data
+
+        tempData = []
 
         d3.select("#date").property("value", `${data.year}-01-01`)
 
-        let indexArray = []
-
-        // slicing months
-        for (let i = 1; i < tempData.length; i++) {
-            if (tempData[i].datetime.slice(0, 7) != tempData[i-1].datetime.slice(0, 7)) {
-                indexArray.push(i)
+        // add January label
+        let month = 0
+        tempData.push({'type': 'label', 'month': month})
+        tempData.push(data.data[0])
+        // for loop to go through all of the data
+        // create a new data array with a conditional to push current date or if today is a new month; month marker then current date
+        for (let i = 1; i < data.data.length; i++) {
+            if (data.data[i].datetime.slice(0, 7) == data.data[i-1].datetime.slice(0, 7)) {
+                // create data
+                tempData.push(data.data[i])
+            }
+            else {
+                // create new month marker then data
+                month++
+                let label = {'type': 'label', 'month': month}
+                tempData.push(label)
+                tempData.push(data.data[i])
             }
         }
+        data.data = tempData
+        globals.data = data
 
-        for (let i = 0; i < indexArray.length; i++) {
-            let item = {'type': 'label', 'month': 11-i}
-            tempData.splice(indexArray[indexArray.length - 1 - i], 0, item)
-        }
-
-        // Add January label
-        tempData.splice(0, 0, {'type': 'label', 'month': 0})
         clearDrilldown()
         drawBlanket()
     })
