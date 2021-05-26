@@ -1,52 +1,3 @@
-let globals = {nColumns: 15}
-globals.tempRanges = {
-    min: -10,
-    max: 110,
-    cutoffs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    get ranges() {
-        let ranges = [{min: this.min, max: this.cutoffs[0]}]
-        for (let i = 0; i < this.cutoffs.length - 1; i++) {
-            ranges.push({min: this.cutoffs[i], max: this.cutoffs[i+1]})
-        }
-        ranges.push({min: this.cutoffs[this.cutoffs.length - 1], max: this.max})
-        return ranges
-    },
-    get values() {
-        return [this.min].concat(this.cutoffs).concat([this.max])
-    }
-}
-
-globals.selectedDate = ""
-
-d3.select('#date')
-    .on("change", function(d){
-        let dt = d.target.value
-        globals.selectedDate = dt
-        drawBlanket()
-        drilldown(dt)
-    })
-
-let slider = d3
-    .sliderHorizontal()
-    .min(10)
-    .max(20)
-    .step(1)
-    .width(300)
-    .displayValue(false)
-    .value(globals.nColumns)
-    .on('onchange', (val) => {
-        globals.nColumns = val;
-        drawBlanket()
-    })
-
-d3.select('#column-slider')
-    .append('svg')
-    .attr('width', 500)
-    .attr('height', 100)
-    .append('g')
-    .attr('transform', 'translate(30,30)')
-    .call(slider);
-
 let yarnColors = {
     aubergine:{url:'./images/aubergine-132.jpg', color: '#512e4f'},
     coral: {url:'./images/coral-135.jpg', color: '#f06188'},
@@ -64,6 +15,47 @@ let yarnColors = {
     wine: {url:'./images/wine-117.jpg', color: '#611a24'},
     lightGrey: {url:'./images/light-grey-103.jpg', color: '#c8bcaf'},
     darkGrey: {url:'./images/dark-grey-104.jpg', color:'#615b59'},
+}
+
+function initializeUI() {
+    // Date picker
+    d3.select('#date')
+    .on("change", function(d){
+        let dt = d.target.value
+        globals.selectedDate = dt
+        drawBlanket()
+        drilldown(dt)
+    })
+
+    // Column picker
+    let slider = d3
+        .sliderHorizontal()
+        .min(10)
+        .max(20)
+        .step(1)
+        .width(300)
+        .displayValue(false)
+        .value(globals.nColumns)
+        .on('onchange', (val) => {
+            globals.nColumns = val;
+            drawBlanket()
+        })
+
+    d3.select('#column-slider')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)')
+        .call(slider)
+
+    // Location picker    
+    d3.select('#location-select').on('change', function(){
+        let fileName = d3.select(this).property('value')
+        update(fileName)
+    })
+
+    drawTempRanges()
 }
 
 function color(val, texture){
@@ -136,10 +128,10 @@ function drawTempRanges() {
     let drag = d3.drag()
         .on('start', function(event, d) { d3.select(this).attr('y', d => tempScale(d) - 3).attr('height', 6) })
         .on('drag', function(event, d) {
-            let min = tempScale(globals.tempRanges.min + 1);
-            let max = tempScale(globals.tempRanges.cutoffs[1] - 1);
+            let min = tempScale(globals.tempRanges.min + 1)
+            let max = tempScale(globals.tempRanges.cutoffs[1] - 1)
             for (let i = 0; i < globals.tempRanges.cutoffs.length; i++) {
-                let cutoff = globals.tempRanges.cutoffs[i];
+                let cutoff = globals.tempRanges.cutoffs[i]
                 if (cutoff < d) {
                     min = tempScale(cutoff + 1)
                     max = tempScale(globals.tempRanges.cutoffs[i + 2] - 1 || globals.tempRanges.max - 1)
@@ -157,10 +149,10 @@ function drawTempRanges() {
 
     function endUpdate(event, d) {
         let i = globals.tempRanges.cutoffs.indexOf(d)
-        let min = tempScale(globals.tempRanges.min + 1);
-        let max = tempScale(globals.tempRanges.cutoffs[1] - 1);
+        let min = tempScale(globals.tempRanges.min + 1)
+        let max = tempScale(globals.tempRanges.cutoffs[1] - 1)
         for (let i = 0; i < globals.tempRanges.cutoffs.length; i++) {
-            let cutoff = globals.tempRanges.cutoffs[i];
+            let cutoff = globals.tempRanges.cutoffs[i]
             if (cutoff < d) {
                 min = tempScale(cutoff + 1)
                 max = tempScale(globals.tempRanges.cutoffs[i + 2] - 1 || globals.tempRanges.max - 1)
@@ -168,8 +160,8 @@ function drawTempRanges() {
         }
         value = Math.max(max, Math.min(min, event.y))
         globals.tempRanges.cutoffs[i] = tempScale.invert(value)
-        drawTempRanges();
-        drawBlanket();
+        drawTempRanges()
+        drawBlanket()
         drilldown()
     }
 
@@ -201,51 +193,6 @@ function drawTempRanges() {
     svg.append('g')
         .attr('transform',`translate(${margin.left}, ${margin.top})`)
         .call(axis)
-}
-
-drawTempRanges();
-
-function drilldown(dt) {
-    if (!dt) dt = globals.selectedDate;
-    let svg = d3.select("#drilldown>svg") // selects drilldown svg
-    let edge = 300
-    let width = edge
-    let height = edge
-    svg.attr('height', height).attr('width', width).html("")
-
-    let datum = globals.data.data.filter(x => x.datetime == dt)[0]
-    svg
-
-    .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
-        .append('circle')
-        .attr('cx', 0.5*edge)
-        .attr('cy', 0.5*edge)
-        .attr('r', d => {
-            if (d.measurement == 'tempmax') return 0.5*3/4*edge
-            else if (d.measurement == 'temp') return 0.5*2/4*edge
-            else if (d.measurement == 'tempmin') return 0.5*1/4*edge
-        })
-        .attr('fill', d => {
-            if(d.value) {
-                return color(d.value, false)
-            } else {
-                return 'lightgrey'
-            }
-        })
-
-    let description = d3.select("#drilldown>div")
-    description.html("")
-    description.append("p")
-        .text(dt)
-    description.append("p")
-        .text(`Max temp: ${datum.tempmax}`)
-        .append("div").attr("class", "color-block").style("background", color(datum.tempmax))
-    description.append("p")
-        .text(`Average temp: ${datum.temp}`)
-        .append("div").attr("class", "color-block").style("background", color(datum.temp))
-    description.append("p")
-        .text(`Min temp: ${datum.tempmin}`)
-        .append("div").attr("class", "color-block").style("background", color(datum.tempmin))
 }
 
 function drawBlanket(){
@@ -306,7 +253,6 @@ function drawBlanket(){
     let layer1 = svg.append('g')
     let layer2 = svg.append('g')
 
-
     // making a virtual selection of the class "square" & binding data
     let squares = layer1.selectAll(".square").data(tempData)
         .enter().append("g")
@@ -324,12 +270,12 @@ function drawBlanket(){
             let dt = d.target.__data__.datetime
             globals.selectedDate = dt
             d3.select("#date").property("value", dt)
-            drawBlanket();
-            drilldown(dt);
+            drawBlanket()
+            drilldown(dt)
         })
 
     squares
-        .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:d[x]}; })).enter()
+        .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:d[x]} })).enter()
         .append('circle')
         .attr('cx', 0.5*edge)
         .attr('cy', 0.5*edge)
@@ -351,7 +297,6 @@ function drawBlanket(){
         .enter().append("g")
         .attr("class", "highlight-square")
         .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
-
 
     highlightSquares
         .append('rect')
@@ -379,39 +324,47 @@ function drawBlanket(){
         .style('font-family', 'sans-serif')
 }
 
-function update(fileName){
-    d3.json(`data/${fileName}.json`).then(function(data) {
-        // console.log(data)
+function drilldown(dt) {
+    if (!dt) dt = globals.selectedDate
+    let svg = d3.select("#drilldown>svg") // selects drilldown svg
+    let edge = 300
+    let width = edge
+    let height = edge
+    svg.attr('height', height).attr('width', width).html("")
 
-        tempData = []
+    let datum = globals.data.data.filter(x => x.datetime == dt)[0]
+    svg
 
-        d3.select("#date").property("value", `${data.year}-01-01`)
-
-        // add January label
-        let month = 0
-        tempData.push({'type': 'label', 'month': month})
-        tempData.push(data.data[0])
-        // for loop to go through all of the data
-        // create a new data array with a conditional to push current date or if today is a new month; month marker then current date
-        for (let i = 1; i < data.data.length; i++) {
-            if (data.data[i].datetime.slice(0, 7) == data.data[i-1].datetime.slice(0, 7)) {
-                // create data
-                tempData.push(data.data[i])
+    .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
+        .append('circle')
+        .attr('cx', 0.5*edge)
+        .attr('cy', 0.5*edge)
+        .attr('r', d => {
+            if (d.measurement == 'tempmax') return 0.5*3/4*edge
+            else if (d.measurement == 'temp') return 0.5*2/4*edge
+            else if (d.measurement == 'tempmin') return 0.5*1/4*edge
+        })
+        .attr('fill', d => {
+            if(d.value) {
+                return color(d.value, false)
+            } else {
+                return 'lightgrey'
             }
-            else {
-                // create new month marker then data
-                month++
-                let label = {'type': 'label', 'month': month}
-                tempData.push(label)
-                tempData.push(data.data[i])
-            }
-        }
-        data.data = tempData
-        globals.data = data
+        })
 
-        clearDrilldown()
-        drawBlanket()
-    })
+    let description = d3.select("#drilldown>div")
+    description.html("")
+    description.append("p")
+        .text(dt)
+    description.append("p")
+        .text(`Max temp: ${datum.tempmax}`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tempmax))
+    description.append("p")
+        .text(`Average temp: ${datum.temp}`)
+        .append("div").attr("class", "color-block").style("background", color(datum.temp))
+    description.append("p")
+        .text(`Min temp: ${datum.tempmin}`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tempmin))
 }
 
 function clearDrilldown(){
@@ -419,9 +372,3 @@ function clearDrilldown(){
     d3.select("#drilldown>div").html("")
 }
 
-d3.select('#location-select').on('change', function(){
-    let fileName = d3.select(this).property('value')
-    update(fileName)
-})
-
-update('Fort_Lee_2018')
