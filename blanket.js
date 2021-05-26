@@ -22,6 +22,7 @@ d3.select('#date')
     .on("change", function(d){
         let dt = d.target.value
         globals.selectedDate = dt
+        drawBlanket()
         drilldown(dt)
     })
 
@@ -323,6 +324,7 @@ function drawBlanket(){
             let dt = d.target.__data__.datetime
             globals.selectedDate = dt
             d3.select("#date").property("value", dt)
+            drawBlanket();
             drilldown(dt);
         })
 
@@ -345,36 +347,36 @@ function drawBlanket(){
         })
         .style('pointer-events', "none")
 
-    // let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
-    //     .enter().append("g")
-    //     .attr("class", "highlight-square")
-    //     .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
+    let highlightSquares = layer2.selectAll(".highlight-square").data(tempData)
+        .enter().append("g")
+        .attr("class", "highlight-square")
+        .attr("transform", (d,i) => `translate(${indexToXY(i).x},${indexToXY(i).y})`)
 
 
-    // highlightSquares
-    //     .append('rect')
-    //     .attr('x', 0)
-    //     .attr('y', 0)
-    //     .attr('width', edge)
-    //     .attr('height', edge)
-    //     .attr('fill', 'none')
-    //     .attr('stroke', 'magenta')
-    //     .attr('stroke-width', 5)
-    //     .attr('display', d => d.datetime == '2015-12-31' ? 'block': 'none')
+    highlightSquares
+        .append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', edge)
+        .attr('height', edge)
+        .attr('fill', 'none')
+        .attr('stroke', 'magenta')
+        .attr('stroke-width', 5)
+        .attr('display', d => d.datetime == globals.selectedDate ? 'block': 'none')
 
-    // highlightSquares
-    //     .append('text')
-    //     .attr('x', edge/2)
-    //     .attr('y', edge/2)
-    //     .attr('dy', edge/8)
-    //     .attr('text-anchor', 'middle')
-    //     .text(d => {
-    //         let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    //         return months[d.month]
-    //         })
-    //     .style('font-weight', '800')
-    //     .style('font-size', `${edge*5/16}px`)
-    //     .style('font-family', 'sans-serif')
+    highlightSquares
+        .append('text')
+        .attr('x', edge/2)
+        .attr('y', edge/2)
+        .attr('dy', edge/8)
+        .attr('text-anchor', 'middle')
+        .text(d => {
+            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            return months[d.month]
+            })
+        .style('font-weight', '800')
+        .style('font-size', `${edge*5/16}px`)
+        .style('font-family', 'sans-serif')
 }
 
 function update(fileName){
