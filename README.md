@@ -3,7 +3,7 @@
 This is (or will be) planning tool for creating a temperature blanket using crochet granny squares. The idea is that there are three concentric circles each depicting data: the min temp, max temp, and avg temp of a day during the course of a year.
 
 ## Live Site (alpha stage)
-https://ars0107.github.io/blanket-stuff/
+https://ars0107.github.io/phizzyviz/
 
 ## To Do
 
@@ -11,8 +11,8 @@ https://ars0107.github.io/blanket-stuff/
 - [x] Add border to circles
 - [x] Reduce radiuses so the borders don't overlap
 - [x] Sampling yarn colors
-- [ ] Tooltip
-- [ ] CSS styling/layout
+- [x] Tooltip
+- [x] CSS styling/layout
 - [ ] Changing min/max temp
 - [ ] Button to switch between fahrenheit and celsius
 - [ ] Gather more data
