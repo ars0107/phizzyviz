@@ -22,10 +22,15 @@ function initializeUI() {
     d3.select('#date')
     .on("change", function(d){
         let dt = d.target.value
-        globals.selectedDate = dt
-        drawBlanket()
-        drilldown(dt)
-    })
+        if (dt.slice(0, 4) !== globals.selectedDate.slice(0, 4)) {
+            globals.selectedDate = dt
+            update()
+            drilldown(dt)
+        } else {
+            drawBlanket()
+            drilldown(dt)    
+        }
+    }).property('value', globals.selectedDate)
 
     // Column picker
     let slider = d3
@@ -196,8 +201,7 @@ function drawTempRanges() {
 }
 
 function drawBlanket(){
-    let data = globals.data
-    let tempData = data.data
+    let tempData = globals.data
     let columns = globals.nColumns
     let edge = 32
     let rows = Math.ceil(tempData.length/columns)
@@ -211,7 +215,7 @@ function drawBlanket(){
         return {x: x*edge, y: y*edge}
     }
 
-    d3.select('header').html(`<h1>${data.displayName} ${data.year}</h1>`)
+    d3.select('header').html(`<h1>${globals.selectedLocation.name} - ${globals.selectedDate.slice(0,4)}</h1>`)
 
     // select element, adjust attributes
     let svg = d3.select("#blanket")
@@ -267,7 +271,7 @@ function drawBlanket(){
         .attr('height', edge)
         .attr('fill', 'url(#darkGrey-bg)')
         .on("click", function(d){
-            let dt = d.target.__data__.datetime
+            let dt = d.target.__data__.time
             globals.selectedDate = dt
             d3.select("#date").property("value", dt)
             drawBlanket()
@@ -275,18 +279,18 @@ function drawBlanket(){
         })
 
     squares
-        .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:d[x]} })).enter()
+        .selectAll('circle').data(d => ['tmax','tavg','tmin'].map(x => {return {measurement:x, value:d[x]} })).enter()
         .append('circle')
         .attr('cx', 0.5*edge)
         .attr('cy', 0.5*edge)
         .attr('r', d => {
-            if (d.measurement == 'tempmax') return 0.5*3/4*edge
-            else if (d.measurement == 'temp') return 0.5*2/4*edge
-            else if (d.measurement == 'tempmin') return 0.5*1/4*edge
+            if (d.measurement == 'tmax') return 0.5*3/4*edge
+            else if (d.measurement == 'tavg') return 0.5*2/4*edge
+            else if (d.measurement == 'tmin') return 0.5*1/4*edge
         })
         .attr('fill', d => {
             if(d.value) {
-                return color(d.value, d.measurement != 'tempmin')
+                return color(d.value, d.measurement != 'tmin')
             } else {
                 return 'url(#lightGrey-fg)'
             }
@@ -307,7 +311,7 @@ function drawBlanket(){
         .attr('fill', 'none')
         .attr('stroke', 'magenta')
         .attr('stroke-width', 5)
-        .attr('display', d => d.datetime == globals.selectedDate ? 'block': 'none')
+        .attr('display', d => d.time == globals.selectedDate ? 'block': 'none')
 
     highlightSquares
         .append('text')
@@ -332,17 +336,17 @@ function drilldown(dt) {
     let height = edge
     svg.attr('height', height).attr('width', width).html("")
 
-    let datum = globals.data.data.filter(x => x.datetime == dt)[0]
+    let datum = globals.data.filter(x => x.time == dt)[0]
     svg
 
-    .selectAll('circle').data(d => ['tempmax','temp','tempmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
+    .selectAll('circle').data(d => ['tmax','tavg','tmin'].map(x => {return {measurement:x, value:datum[x]}; })).enter()
         .append('circle')
         .attr('cx', 0.5*edge)
         .attr('cy', 0.5*edge)
         .attr('r', d => {
-            if (d.measurement == 'tempmax') return 0.5*3/4*edge
-            else if (d.measurement == 'temp') return 0.5*2/4*edge
-            else if (d.measurement == 'tempmin') return 0.5*1/4*edge
+            if (d.measurement == 'tmax') return 0.5*3/4*edge
+            else if (d.measurement == 'tavg') return 0.5*2/4*edge
+            else if (d.measurement == 'tmin') return 0.5*1/4*edge
         })
         .attr('fill', d => {
             if(d.value) {
@@ -357,14 +361,14 @@ function drilldown(dt) {
     description.append("p")
         .text(dt)
     description.append("p")
-        .text(`Max temp: ${datum.tempmax}`)
-        .append("div").attr("class", "color-block").style("background", color(datum.tempmax))
+        .text(`Max temp: ${datum.tmax}°`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tmax))
     description.append("p")
-        .text(`Average temp: ${datum.temp}`)
-        .append("div").attr("class", "color-block").style("background", color(datum.temp))
+        .text(`Average temp: ${datum.tavg}°`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tavg))
     description.append("p")
-        .text(`Min temp: ${datum.tempmin}`)
-        .append("div").attr("class", "color-block").style("background", color(datum.tempmin))
+        .text(`Min temp: ${datum.tmin}°`)
+        .append("div").attr("class", "color-block").style("background", color(datum.tmin))
 }
 
 function clearDrilldown(){

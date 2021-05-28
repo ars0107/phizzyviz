@@ -13,6 +13,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="site.webmanifest">
+    <script src="globals.js"></script>
+    <script src="location_autocomplete.js"></script>
 </head>
 
 <body>
@@ -22,21 +24,8 @@
     <div id="temperature-picker"></div>
     <div id="column-slider"></div>
     <div id="location-picker">
-        <select name="locations" id="location-select">
-            <option value="austin_07">Austin, TX - 2007</option>
-            <option value="austin_15">Austin, TX - 2015</option>
-            <option value="austin_21">Austin, TX - 2021</option>
-            <option value="Barrow_AK_2020">Barrow, AK - 2020</option>
-            <option value="Belize_2020">Belize - 2020</option>
-            <option value="chicago_11">Chicago, IL - 2011</option>
-            <option value="Costa_Rica_2020">Costa Rica - 2020</option>
-            <option value="davis_06">Davis, CA - 2006</option>
-            <option value="davis_07">Davis, CA - 2007</option>
-            <option value="Fort_Lee_2018" selected>Fort Lee, NJ - 2018</option>
-            <option value="sacramento_07">Sacramento, CA - 2007</option>
-        </select>
     </div>
-    <div><input type="date" id="date" value="2018-01-01"></div>
+    <div><input type="date" id="date"></div>
     <div id="viz">
         <svg id="blanket"></svg>
         <div id="drilldown">
